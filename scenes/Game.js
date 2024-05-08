@@ -17,7 +17,12 @@ export default class Game extends Phaser.Scene {
     //importar plataforma
     this.load.image("plataforma", "../public/assets/platform.png");
     //importar personaje
-    this.load.image("personaje", "../public/assets/Ninja.png")
+    this.load.image("personaje", "../public/assets/Ninja.png");
+
+    //importar recolectables
+    this.load.image("cuadrado", "../public/assets/cuadrado.png");
+    this.load.image("triangulo", "../public/assets/triangulo.png");
+    this.load.image("hectagono", "../public/assets/hectagono.png");
   }
 
   create() {
@@ -35,9 +40,51 @@ export default class Game extends Phaser.Scene {
     //this.personaje.setBounce(0.2);
     //agregar collision personaje y plataforma
     this.physics.add.collider(this.personaje, this.plataformas);
+    //crear teclas (todas)
+    this.cursor = this.input.keyboard.createCursorKeys();
+
+    //crear teclas una a la vez
+    //this.w = this.input.keyboard.addKey(Phaser.Input.keyboard.KeyCodes.W);
+
+    //crear grupo recolectables
+    this.recolectables = this.physics.add.group();
+    this.physics.add.collider(this.personaje, this.recolectables);
+
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.onSecond,
+      callbackScope: this,
+      loop: true,
+    });
+
+
   }
 
+
+  onSecond(){
+    //random
+    const tipos = ["cuadrado","triangulo","hectagono"];
+    const tipo = Phaser.Math.RND.pick(tipos);
+    //crear recolectable
+    let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
+    recolectable.setVelocity(0, 100)
+  }
+
+
+
   update() {
- 
+    //MOVIMIENTO PJ
+    if (this.cursor.left.isDown){
+      this.personaje.setVelocityX(-160);
+    } else if(this.cursor.right.isDown){
+      this.personaje.setVelocityX(160);
+    }else{
+      this.personaje.setVelocityX(0);
+    }
+    //salto pj
+    if(this.cursor.up.isDown && this.personaje.body.touching.down){
+      this.personaje.setVelocityY(-330);
+    }
   }
 }
