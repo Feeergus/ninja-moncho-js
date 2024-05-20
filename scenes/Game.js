@@ -48,8 +48,8 @@ export default class Game extends Phaser.Scene {
 
     //crear grupo recolectables
     this.recolectables = this.physics.add.group();
-    this.physics.add.collider(this.personaje, this.recolectables);
-
+    //this.physics.add.collider(this.personaje, this.recolectables);
+    this.physics.add.collider(this.personaje, this.recolectables, this.destroyRec, null, this);
 
     this.time.addEvent({
       delay: 1000,
@@ -58,9 +58,10 @@ export default class Game extends Phaser.Scene {
       loop: true,
     });
 
-
+    
   }
 
+  
 
   onSecond(){
     //random
@@ -69,6 +70,8 @@ export default class Game extends Phaser.Scene {
     //crear recolectable
     let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
     recolectable.setVelocity(0, 100)
+    
+    
   }
 
 
@@ -86,5 +89,14 @@ export default class Game extends Phaser.Scene {
     if(this.cursor.up.isDown && this.personaje.body.touching.down){
       this.personaje.setVelocityY(-330);
     }
+    //RECOLECTAR OBJETOS
+    
+
+    
+  }
+
+  destroyRec(personaje, recolectables){
+    //recolectables.destroy()
+    recolectables.disableBody(true,true)
   }
 }
