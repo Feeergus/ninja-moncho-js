@@ -69,7 +69,7 @@ export default class Game extends Phaser.Scene {
     const tipo = Phaser.Math.RND.pick(tipos);
     //crear recolectable
     let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
-    recolectable.setVelocity(0, 100)
+    recolectable.setVelocity(0, 100);
     
     
   }
@@ -97,6 +97,6 @@ export default class Game extends Phaser.Scene {
 
   destroyRec(personaje, recolectables){
     //recolectables.destroy()
-    recolectables.disableBody(true,true)
+    recolectables.disableBody(true,true);
   }
 }
