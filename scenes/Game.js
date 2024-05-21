@@ -26,6 +26,10 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    var score = 0;
+    var ScoreText;
+
+    
     //crear elementos
     this.cielo = this.add.image(400, 300, "cielo");
     this.cielo.setScale(2);
@@ -42,7 +46,8 @@ export default class Game extends Phaser.Scene {
     this.physics.add.collider(this.personaje, this.plataformas);
     //crear teclas (todas)
     this.cursor = this.input.keyboard.createCursorKeys();
-
+    //puntaje
+    ScoreText = this.add.text(16, 16, 'score: 0', { fontSize: '20px', fill: '#000'});
     //crear teclas una a la vez
     //this.w = this.input.keyboard.addKey(Phaser.Input.keyboard.KeyCodes.W);
 
@@ -98,5 +103,9 @@ export default class Game extends Phaser.Scene {
   destroyRec(personaje, recolectables){
     //recolectables.destroy()
     recolectables.disableBody(true,true);
+
+    //tipo de recolectable
+
+    
   }
 }
