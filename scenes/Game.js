@@ -6,6 +6,18 @@ export default class Game extends Phaser.Scene {
   }
 
   init() {
+    //puntaje
+    this.score = 0;
+    this.shapes = {
+      triangulo: {points: 10, count: 0},
+      cuadrado: {points: 20, count: 0},
+      hectagono: {points: 30, count: 0}
+    }
+    //temporizador
+    this.gameOver = false;
+    this.timer = 15;
+    //var timerText;
+    
     
   }
 
@@ -26,10 +38,6 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    var score = 0;
-    var ScoreText;
-
-    
     //crear elementos
     this.cielo = this.add.image(400, 300, "cielo");
     this.cielo.setScale(2);
@@ -38,6 +46,7 @@ export default class Game extends Phaser.Scene {
     //agregar plataforma
     this.plataformas.create(450, 550, "plataforma").setScale(3).refreshBody();
     //crear personaje
+    
     this.personaje = this.physics.add.sprite(400, 300, "personaje");
     this.personaje.setScale(0.1);
     this.personaje.setCollideWorldBounds(true);
@@ -47,7 +56,9 @@ export default class Game extends Phaser.Scene {
     //crear teclas (todas)
     this.cursor = this.input.keyboard.createCursorKeys();
     //puntaje
-    ScoreText = this.add.text(16, 16, 'score: 0', { fontSize: '20px', fill: '#000'});
+    //ScoreText = this.add.text(16, 100, 'score: 0', { fontSize: '20px', fill: '#000'});
+    //temporizador
+    this.timerText = this.add.text(16, 16, `tiempo restante: ${this.timer}`, { fontSize: "20px", fill: "#000" })
     //crear teclas una a la vez
     //this.w = this.input.keyboard.addKey(Phaser.Input.keyboard.KeyCodes.W);
 
@@ -62,26 +73,51 @@ export default class Game extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
-
-    
+    //reinicio
+    this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R );
+    //TEMPORIZADOR
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.handleTimer,
+      callbackScope: this,
+      loop: true,
+    });
+   
+    this.ScoreText = this.add.text(16, 
+      60,
+      `score: ${this.score} 
+       T: ${this.shapes["triangulo"].count} 
+       C: ${this.shapes["cuadrado"].count} 
+       H: ${this.shapes["hectagono"].count}` 
+      )
   }
 
   
 
   onSecond(){
+    if(this.gameOver){
+      return
+    }
     //random
     const tipos = ["cuadrado","triangulo","hectagono"];
     const tipo = Phaser.Math.RND.pick(tipos);
     //crear recolectable
     let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
     recolectable.setVelocity(0, 100);
-    
-    
   }
 
 
 
   update() {
+    if (this.gameOver && this.r.isDown){
+      this.scene.restart();
+    }
+    //game over
+    if (this.gameOver){
+      this.physics.pause();
+      this.timerText.setText("Game Over");
+      return;
+    }
     //MOVIMIENTO PJ
     if (this.cursor.left.isDown){
       this.personaje.setVelocityX(-160);
@@ -94,18 +130,58 @@ export default class Game extends Phaser.Scene {
     if(this.cursor.up.isDown && this.personaje.body.touching.down){
       this.personaje.setVelocityY(-330);
     }
-    //RECOLECTAR OBJETOS
+    
+
     
 
     
   }
 
+  //RECOLECTAR OBJETOS
   destroyRec(personaje, recolectables){
+    //tipo de recolectable y puntos
+    const nombreFig = recolectables.texture.key;
+    const puntosFig = this.shapes[nombreFig].points;
+    this.score += puntosFig;
+    //cantidad Recolectables
+    this.shapes[nombreFig].count += 1;
+    console.log(nombreFig, puntosFig, this.score);
+    console.table(this.shapes);
     //recolectables.destroy()
-    recolectables.disableBody(true,true);
+    recolectables.destroy(true,true);
 
-    //tipo de recolectable
-
+    //sumar al score
+    this.ScoreText.setText(
+      `score: ${this.score} 
+       T: ${this.shapes["triangulo"].count} 
+       C: ${this.shapes["cuadrado"].count} 
+       H: ${this.shapes["hectagono"].count}` 
+      )
     
+    //console.log("recolectado ", recolectable.texture.key);
+    
+    this.checkWin();
+  }
+
+  checkWin(){
+    //constante ganar
+    const cumplePuntos = this.score >= 100;
+    const cumpleFiguras = this.shapes["triangulo"].count >= 2 &&
+     this.shapes["cuadrado"].count >= 2 &&
+      this.shapes["hectagono"].count >= 2;
+  
+    if(cumplePuntos && cumpleFiguras){
+      console.log("Ganaste");
+      this.scene.start("end");
+    }
+  }
+
+  handleTimer(){
+    this.timer -= 1;
+    this.timerText.setText( )
+    if(this.timer === 0){
+      this.gameOver = true;
+      this.scene.start("end");
+    }
   }
 }
