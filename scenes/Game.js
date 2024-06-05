@@ -11,7 +11,8 @@ export default class Game extends Phaser.Scene {
     this.shapes = {
       triangulo: {points: 10, count: 0},
       cuadrado: {points: 20, count: 0},
-      hectagono: {points: 30, count: 0}
+      hectagono: {points: 30, count: 0},
+      bomba: {points: -10, count: 0}
     }
     //temporizador
     this.gameOver = false;
@@ -35,6 +36,7 @@ export default class Game extends Phaser.Scene {
     this.load.image("cuadrado", "../public/assets/cuadrado.png");
     this.load.image("triangulo", "../public/assets/triangulo.png");
     this.load.image("hectagono", "../public/assets/hectagono.png");
+    this.load.image("bomba", "../public/assets/bombita.png");
   }
 
   create() {
@@ -89,7 +91,8 @@ export default class Game extends Phaser.Scene {
       `score: ${this.score} 
        T: ${this.shapes["triangulo"].count} 
        C: ${this.shapes["cuadrado"].count} 
-       H: ${this.shapes["hectagono"].count}` 
+       H: ${this.shapes["hectagono"].count}
+       B: ${this.shapes["bomba"].count}` 
       )
   }
 
@@ -100,7 +103,7 @@ export default class Game extends Phaser.Scene {
       return
     }
     //random
-    const tipos = ["cuadrado","triangulo","hectagono"];
+    const tipos = ["cuadrado","triangulo","hectagono", "bomba"];
     const tipo = Phaser.Math.RND.pick(tipos);
     //crear recolectable
     let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
@@ -162,7 +165,8 @@ export default class Game extends Phaser.Scene {
       `score: ${this.score} 
        T: ${this.shapes["triangulo"].count} 
        C: ${this.shapes["cuadrado"].count} 
-       H: ${this.shapes["hectagono"].count}` 
+       H: ${this.shapes["hectagono"].count}
+       B: ${this.shapes["bomba"].count}` 
       )
     
     //console.log("recolectado ", recolectable.texture.key);
