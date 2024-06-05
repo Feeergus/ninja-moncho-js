@@ -57,8 +57,6 @@ export default class Game extends Phaser.Scene {
     this.cursor = this.input.keyboard.createCursorKeys();
     //puntaje
     //ScoreText = this.add.text(16, 100, 'score: 0', { fontSize: '20px', fill: '#000'});
-    //temporizador
-    this.timerText = this.add.text(16, 16, `tiempo restante: ${this.timer}`, { fontSize: "20px", fill: "#000" })
     //crear teclas una a la vez
     //this.w = this.input.keyboard.addKey(Phaser.Input.keyboard.KeyCodes.W);
 
@@ -82,6 +80,8 @@ export default class Game extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
+
+    this.timerText = this.add.text(16, 16, `tiempo restante: ${this.timer}`, { fontSize: "20px", fill: "#000" });
    
     this.ScoreText = this.add.text(16, 
       60,
