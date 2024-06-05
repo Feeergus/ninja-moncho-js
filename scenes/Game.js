@@ -15,7 +15,7 @@ export default class Game extends Phaser.Scene {
     }
     //temporizador
     this.gameOver = false;
-    this.timer = 15;
+    this.timer = 30;
     //var timerText;
     
     
@@ -64,7 +64,8 @@ export default class Game extends Phaser.Scene {
     this.recolectables = this.physics.add.group();
     //this.physics.add.collider(this.personaje, this.recolectables);
     this.physics.add.collider(this.personaje, this.recolectables, this.destroyRec, null, this);
-
+    
+    this.physics.add.collider(this.recolectables, this.plataformas, this.EnRebote, null, this);
     this.time.addEvent({
       delay: 1000,
       callback: this.onSecond,
@@ -104,6 +105,12 @@ export default class Game extends Phaser.Scene {
     //crear recolectable
     let recolectable = this.recolectables.create(Phaser.Math.Between(10, 790), 0, tipo).setScale(0.1);
     recolectable.setVelocity(0, 100);
+
+    const bounce = Phaser.Math.FloatBetween(0.4, 0.8);
+    recolectable.setBounce(bounce);
+
+    recolectable.setData("points", this.shapes[tipo].points);
+    recolectable.setData("tipo", tipo);
   }
 
 
@@ -140,13 +147,13 @@ export default class Game extends Phaser.Scene {
   //RECOLECTAR OBJETOS
   destroyRec(personaje, recolectables){
     //tipo de recolectable y puntos
-    const nombreFig = recolectables.texture.key;
-    const puntosFig = this.shapes[nombreFig].points;
-    this.score += puntosFig;
+    const nombreFig = recolectables.getData("tipo");
+    const points = recolectables.getData("points");
+    this.score += points;
     //cantidad Recolectables
     this.shapes[nombreFig].count += 1;
-    console.log(nombreFig, puntosFig, this.score);
-    console.table(this.shapes);
+    //console.log(nombreFig, points, this.score);
+    //console.table(this.shapes);
     //recolectables.destroy()
     recolectables.destroy(true,true);
 
@@ -171,17 +178,33 @@ export default class Game extends Phaser.Scene {
       this.shapes["hectagono"].count >= 2;
   
     if(cumplePuntos && cumpleFiguras){
-      console.log("Ganaste");
-      this.scene.start("end");
+      //console.log("Ganaste");
+      this.scene.start("end", {
+        score: this.score,
+        gameOver: this.gameOver,
+      });
     }
   }
 
   handleTimer(){
     this.timer -= 1;
-    this.timerText.setText( )
+    this.timerText.setText(`tiempo restante: ${this.timer}`);
     if(this.timer === 0){
       this.gameOver = true;
-      this.scene.start("end");
+      this.scene.start("end", {
+        score: this.score,
+        gameOver: this.gameOver,
+      });
     }
   }
+
+  EnRebote(recolectable, plataforma){
+    let points = recolectable.getData("points");
+    points -= 5;
+    recolectable.setData("points", points);
+    if (points <= 0) {
+      recolectable.destroy();
+    }
+  }
+
 }

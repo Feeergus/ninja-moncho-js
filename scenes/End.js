@@ -5,7 +5,7 @@ export default class End extends Phaser.Scene {
 
     init(data) {
         this.score = data.score || 0;
-        this.gameOver = data.gameOver || true;
+        this.gameOver = data.gameOver;
     }
     
     create() {
